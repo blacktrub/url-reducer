@@ -12,7 +12,10 @@ func main() {
 	}
 
 	r := gin.Default()
+	// TODO: mode from .env
+	gin.SetMode(gin.DebugMode)
 	r.GET("/api/read", internal.ReadUrl)
+	r.POST("/api/put", internal.PutUrl)
 	// TODO: port to .env
 	r.Run(":8090")
 }
