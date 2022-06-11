@@ -11,7 +11,8 @@ type ShortUrl string
 type URL struct {
 	ID        uint `gorm:"primarykey"`
 	OriginUrl OriginUrl
-	ShortUrl  ShortUrl
+	// TODO: add an index because we will query by the field
+	ShortUrl ShortUrl
 }
 
 func (u *URL) createHash(id uint) ShortUrl {
@@ -40,6 +41,9 @@ func (u *URL) Get(shortUrl ShortUrl) (URL, error) {
 	}
 
 	var url URL
-	db.First(&url, "short_url = ?", shortUrl)
+	result := db.Take(&url, "short_url = ?", shortUrl)
+	if result.Error != nil {
+		return url, result.Error
+	}
 	return url, nil
 }

@@ -8,3 +8,12 @@ import (
 func GetDBConnection() (*gorm.DB, error) {
 	return gorm.Open(sqlite.Open("reducer.db"), &gorm.Config{})
 }
+
+func InitDB() (*gorm.DB, error) {
+	db, err := GetDBConnection()
+	if err != nil {
+		return db, err
+	}
+	db.AutoMigrate(&URL{})
+	return db, err
+}
