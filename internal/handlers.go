@@ -7,8 +7,7 @@ import (
 )
 
 func ReadUrl(c *gin.Context) {
-    // TODO: don't work properly
-	shortUrl := c.Param("hash")
+	shortUrl := c.Query("hash")
 	url := URL{}
 	orgUrl, err := url.Get(ShortUrl(shortUrl))
 	if err != nil {
