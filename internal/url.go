@@ -2,6 +2,8 @@ package internal
 
 import (
 	"encoding/base32"
+	"fmt"
+	"strings"
 )
 
 type OriginUrl string
@@ -15,11 +17,12 @@ type URL struct {
 	ShortUrl ShortUrl
 }
 
-func (u *URL) createHash(id uint) ShortUrl {
-	return ShortUrl(base32.StdEncoding.EncodeToString([]byte(string(id))))
+func createHash(id uint) ShortUrl {
+	hash := base32.StdEncoding.EncodeToString([]byte(fmt.Sprint(id)))
+	return ShortUrl(strings.ReplaceAll(hash, "=", ""))
 }
 
-func (u *URL) Create(originalUrl OriginUrl) (URL, error) {
+func CreateShort(originalUrl OriginUrl) (URL, error) {
 	// TODO: create a connection somewhere else
 	db, err := GetDBConnection()
 	if err != nil {
@@ -28,12 +31,12 @@ func (u *URL) Create(originalUrl OriginUrl) (URL, error) {
 
 	url := URL{OriginUrl: originalUrl, ShortUrl: ""}
 	db.Create(&url)
-	url.ShortUrl = u.createHash(url.ID)
+	url.ShortUrl = createHash(url.ID)
 	db.Save(&url)
 	return url, nil
 }
 
-func (u *URL) Get(shortUrl ShortUrl) (URL, error) {
+func GetByShort(shortUrl ShortUrl) (URL, error) {
 	// TODO: create a connection somewhere else
 	db, err := GetDBConnection()
 	if err != nil {

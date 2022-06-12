@@ -8,8 +8,7 @@ import (
 
 func ReadUrl(c *gin.Context) {
 	shortUrl := c.Query("hash")
-	url := URL{}
-	orgUrl, err := url.Get(ShortUrl(shortUrl))
+	orgUrl, err := GetByShort(ShortUrl(shortUrl))
 	if err != nil {
 		c.String(http.StatusNotFound, "not found")
 		return
@@ -19,14 +18,14 @@ func ReadUrl(c *gin.Context) {
 
 func PutUrl(c *gin.Context) {
 	// TODO: we need to decide how to check if url exists
+	// TODO: maybe it's not a problem
 	orgUrl := c.PostForm("url")
 	if orgUrl == "" {
 		c.String(http.StatusBadRequest, "bad request")
 		return
 	}
 
-	url := URL{}
-	newUrl, err := url.Create(OriginUrl(orgUrl))
+	newUrl, err := CreateShort(OriginUrl(orgUrl))
 	if err != nil {
 		c.String(http.StatusInternalServerError, "smth went wrong")
 		return
