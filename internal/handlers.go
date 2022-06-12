@@ -4,16 +4,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"url-reducer/internal/response"
 )
 
 func ReadUrl(c *gin.Context) {
 	shortUrl := c.Query("hash")
 	orgUrl, err := GetByShort(ShortUrl(shortUrl))
 	if err != nil {
-		c.String(http.StatusNotFound, "not found")
+		c.JSON(http.StatusNotFound, response.Error("Not found"))
 		return
 	}
-	c.String(http.StatusOK, string(orgUrl.OriginUrl))
+	c.JSON(http.StatusOK, response.Success(map[string]string{"url": string(orgUrl.OriginUrl)}))
 }
 
 func PutUrl(c *gin.Context) {
@@ -21,14 +22,14 @@ func PutUrl(c *gin.Context) {
 	// TODO: maybe it's not a problem
 	orgUrl := c.PostForm("url")
 	if orgUrl == "" {
-		c.String(http.StatusBadRequest, "bad request")
+		c.JSON(http.StatusNotFound, response.Error("Bad request"))
 		return
 	}
 
 	newUrl, err := CreateShort(OriginUrl(orgUrl))
 	if err != nil {
-		c.String(http.StatusInternalServerError, "smth went wrong")
+		c.JSON(http.StatusNotFound, response.Error("Something went wrong"))
 		return
 	}
-	c.String(http.StatusOK, string(newUrl.ShortUrl))
+	c.JSON(http.StatusOK, response.Success(map[string]string{"hash": string(newUrl.ShortUrl)}))
 }
