@@ -23,8 +23,6 @@ func (h *handler) ReadUrl(c *gin.Context) {
 }
 
 func (h *handler) PutUrl(c *gin.Context) {
-	// TODO: we need to decide how to check if url exists
-	// TODO: maybe it's not a problem
 	orgUrl := c.PostForm("url")
 	if orgUrl == "" {
 		c.JSON(http.StatusNotFound, response.Error("Bad request"))

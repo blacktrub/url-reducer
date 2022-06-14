@@ -1,10 +1,19 @@
 package main
 
 import (
+	"os"
 	"url-reducer/internal"
 
 	"github.com/gin-gonic/gin"
 )
+
+func getEnv(key string, d string) string {
+	val := os.Getenv(key)
+	if val == "" {
+		return d
+	}
+	return val
+}
 
 func main() {
 	db, err := internal.SetupDB()
@@ -15,10 +24,8 @@ func main() {
 	h := internal.GetHandler(db)
 
 	r := gin.Default()
-	// TODO: mode from .env
-	gin.SetMode(gin.DebugMode)
+	gin.SetMode(getEnv("APP_MODE", gin.DebugMode))
 	r.GET("/api/read", h.ReadUrl)
 	r.POST("/api/put", h.PutUrl)
-	// TODO: port to .env
-	r.Run(":8090")
+	r.Run(getEnv("APP_PORT", ":8090"))
 }
