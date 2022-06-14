@@ -13,8 +13,7 @@ type ShortUrl string
 type URL struct {
 	ID        uint `gorm:"primarykey"`
 	OriginUrl OriginUrl
-	// TODO: add an index because we will query by the field
-	ShortUrl ShortUrl
+	ShortUrl ShortUrl `gorm:"index"`
 }
 
 func createHash(id uint) ShortUrl {
