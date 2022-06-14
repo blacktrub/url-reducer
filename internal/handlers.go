@@ -4,12 +4,17 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"url-reducer/internal/response"
 )
 
-func ReadUrl(c *gin.Context) {
+type handler struct {
+	DB *gorm.DB
+}
+
+func (h *handler) ReadUrl(c *gin.Context) {
 	shortUrl := c.Query("hash")
-	orgUrl, err := GetByShort(ShortUrl(shortUrl))
+	orgUrl, err := GetByShort(h.DB, ShortUrl(shortUrl))
 	if err != nil {
 		c.JSON(http.StatusNotFound, response.Error("Not found"))
 		return
@@ -17,7 +22,7 @@ func ReadUrl(c *gin.Context) {
 	c.JSON(http.StatusOK, response.Success(map[string]string{"url": string(orgUrl.OriginUrl)}))
 }
 
-func PutUrl(c *gin.Context) {
+func (h *handler) PutUrl(c *gin.Context) {
 	// TODO: we need to decide how to check if url exists
 	// TODO: maybe it's not a problem
 	orgUrl := c.PostForm("url")
@@ -26,10 +31,14 @@ func PutUrl(c *gin.Context) {
 		return
 	}
 
-	newUrl, err := CreateShort(OriginUrl(orgUrl))
+	newUrl, err := CreateShort(h.DB, OriginUrl(orgUrl))
 	if err != nil {
 		c.JSON(http.StatusNotFound, response.Error("Something went wrong"))
 		return
 	}
 	c.JSON(http.StatusOK, response.Success(map[string]string{"hash": string(newUrl.ShortUrl)}))
+}
+
+func GetHandler(db *gorm.DB) handler {
+	return handler{DB: db}
 }
