@@ -24,6 +24,7 @@ func main() {
 	h := internal.GetHandler(db)
 
 	r := gin.Default()
+	r.SetTrustedProxies([]string{getEnv("APP_HOST", "127.0.0.1")})
 	gin.SetMode(getEnv("APP_MODE", gin.DebugMode))
 	r.GET("/api/read", h.ReadUrl)
 	r.POST("/api/put", h.PutUrl)
