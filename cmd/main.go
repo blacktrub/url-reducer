@@ -4,6 +4,7 @@ import (
 	"os"
 	"url-reducer/internal"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,6 +25,8 @@ func main() {
 	h := internal.GetHandler(db)
 
 	r := gin.Default()
+	// TODO: maybe we need enable it only for debug mode
+	pprof.Register(r)
 	r.SetTrustedProxies([]string{getEnv("APP_HOST", "127.0.0.1")})
 	gin.SetMode(getEnv("APP_MODE", gin.DebugMode))
 	r.GET("/api/read", h.ReadUrl)
